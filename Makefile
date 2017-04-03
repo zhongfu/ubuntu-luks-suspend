@@ -10,4 +10,9 @@ install:
 	install -Dm755 hook-luks-suspend "$(DESTDIR)/etc/initramfs-tools/hooks/luks-suspend"
 	install -Dm644 systemd-suspend.service "$(DESTDIR)/etc/systemd/system/systemd-suspend.service"
 
+uninstall:
+	rm -r "$(DESTDIR)$(INSTALL_DIR)"
+	rm "$(DESTDIR)/etc/initramfs-tools/hooks/luks-suspend"
+	rm "$(DESTDIR)/etc/systemd/system/systemd-suspend.service"
+
 # vim:set sw=4 ts=4 noet:
