@@ -1,5 +1,5 @@
 ubuntu-luks-suspend
-==================
+====================
 
 A script for [Ubuntu][] to lock the encrypted root volume on suspend.
 
@@ -11,9 +11,8 @@ flush the key from memory, but special care must be taken when applying it to
 the root device.
 
 The `ubuntu-linux-suspend` script replaces the default suspend mechanism of
-systemd. It changes root to initramfs in order to perform the `luksSuspend`,
-actual suspend, and `luksResume` operations. It relies on the `shutdown`
-initcpio hook to provide access to the initramfs.
+systemd. It extracts the initramfs to RAM and changes root to it in order to
+perform the `luksSuspend`, actual suspend, and `luksResume` operations.
 
 [Ubuntu]: https://www.ubuntu.com/
 [dm-crypt with LUKS]: https://wiki.archlinux.org/index.php/Dm-crypt_with_LUKS
@@ -22,9 +21,12 @@ initcpio hook to provide access to the initramfs.
 Installation
 -------------
 
-1. Clone this repository: `git clone https://github.com/zhongfu/ubuntu-luks-suspend` 
-2. Install the scripts: `sudo make install`
-3. Rebuild the initramfs: `sudo update-initramfs -u`
+1. Clone this repository:
+   `git clone https://github.com/zhongfu/ubuntu-luks-suspend`
+2. Install the scripts:
+   `sudo make install`
+3. Rebuild the initramfs:
+   `sudo update-initramfs -u`
 4. Reboot.
 
 
