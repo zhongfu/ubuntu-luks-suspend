@@ -23,25 +23,21 @@ run_dir() {
 }
 
 # Restore chroot
-umount_initramfs() {
+umount_bind() {
     local p
     for p in ${BIND_PATHS}; do
-        ! mountpoint -q "${INITRAMFS_DIR}${p}" || umount "${INITRAMFS_DIR}${p}"
+        mountpoint -q "${INITRAMFS_DIR}${p}" && umount "${INITRAMFS_DIR}${p}"
     done
 }
 
-remount_run() {
-    if ((REMOUNT_RUN_EXEC)); then
-        mount -o remount,noexec /run
-    fi
+umount_initramfs() {
+    mountpoint -q "${INITRAMFS_DIR}" && umount "${INITRAMFS_DIR}"
 }
 
 cleanup() {
-    if ((BIND_MOUNTED)); then
-	umount_initramfs
-    fi
+    ((BIND_MOUNTED)) && umount_bind
 
-    remount_run
+    umount_initramfs
 }
 
 ext4_cryptdevice_mount_options() {
@@ -54,17 +50,18 @@ ext4_cryptdevice_mount_options() {
 ################################################################################
 ## Main script
 
-# Extract initramfs into /run/initramfs, since we don't have the mkinitcpio
-# shutdown hook. Probably a hack, but I'll figure it out later
-if [ ! -e "${INITRAMFS_DIR}/suspend" ]; then
-    INITRAMFS="/boot/initrd.img-$(uname -r)"
-    [ -e "${INITRAMFS}" ] || exec /lib/systemd/systemd-sleep suspend
-    [ -d "${INITRAMFS_DIR}" ] || mkdir "${INITRAMFS_DIR}"
-    cd "${INITRAMFS_DIR}"
-    (cpio --quiet -id; zcat | cpio --quiet -id) < "${INITRAMFS}"
-    chown -R root:root "${INITRAMFS_DIR}"
-    chmod -R go-w "${INITRAMFS_DIR}"
-fi
+# We'll mount ramfs on /run/initramfs, then extract initramfs there
+# Unmount /run/initramfs in case something failed previously
+mountpoint -q "${INITRAMFS_DIR}" && umount "${INITRAMFS_DIR}"
+[ -d "${INITRAMFS_DIR}" ] || mkdir "${INITRAMFS_DIR}"
+mount -t ramfs ramfs /run/initramfs
+
+INITRAMFS="/boot/initrd.img-$(uname -r)"
+[ -e "${INITRAMFS}" ] || exec /lib/systemd/systemd-sleep suspend
+cd "${INITRAMFS_DIR}"
+(cpio --quiet -id; zcat | cpio --quiet -id) < "${INITRAMFS}"
+chown -R root:root "${INITRAMFS_DIR}"
+chmod -R go-w "${INITRAMFS_DIR}"
 
 # In case we're still missing the suspend script.
 # (Perhaps the user didn't regenerate initramfs, or we picked the wrong file?)
@@ -103,12 +100,6 @@ MOUNT_OPTS="$(ext4_cryptdevice_mount_options "$CRYPTNAME")"
 if [[ "$MOUNT_OPTS" ]] && ! [[ "$MOUNT_OPTS" == *nobarrier* || "$MOUNT_OPTS" == *barrier=0* ]]; then
     REMOUNT=1
     mount -o remount,"$MOUNT_OPTS",barrier=0 /
-fi
-
-# remount /run as exec, so that we can run the suspend script
-if $(grep -q "^tmpfs /run .*noexec.*$" /proc/mounts); then
-    REMOUNT_RUN_EXEC=1
-    mount -o remount,exec /run
 fi
 
 # Synchronize filesystems before luksSuspend
