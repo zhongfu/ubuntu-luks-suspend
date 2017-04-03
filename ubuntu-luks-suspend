@@ -39,6 +39,18 @@ ext4_cryptdevice_mount_options() {
 ################################################################################
 ## Main script
 
+# Extract initramfs into /run/initramfs, since we don't have the mkinitcpio
+# shutdown hook. Probably a hack, but I'll figure it out later
+if [ ! -e "${INITRAMFS_DIR}/suspend" ]; then
+    INITRAMFS="/boot/initrd.img-$(uname -r)"
+    [ -e "${INITRAMFS}" ] || exec /lib/systemd/systemd-sleep suspend
+    [ -d "${INITRAMFS_DIR}" ] || mkdir "${INITRAMFS_DIR}"
+    cd "${INITRAMFS_DIR}"
+    (cpio --quiet -id; zcat | cpio --quiet -id) < "${INITRAMFS}"
+fi
+
+# In case we're still missing the suspend script.
+# (Perhaps the user didn't regenerate initramfs, or we picked the wrong file?)
 [ -e "${INITRAMFS_DIR}/suspend" ] || exec /lib/systemd/systemd-sleep suspend
 
 # Prepare chroot
