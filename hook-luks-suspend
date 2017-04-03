@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+PREREQ="cryptroot"
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+cp -pnL /usr/local/lib/ubuntu-luks-suspend/initramfs-suspend ${DESTDIR}/suspend
+chmod 755 ${DESTDIR}/suspend
+
+exit 0
