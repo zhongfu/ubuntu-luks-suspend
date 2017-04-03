@@ -14,4 +14,4 @@ After=sleep.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/openvt -ws /usr/local/lib/ubuntu-luks-suspend/ubuntu-luks-suspend
+ExecStart=/bin/openvt -ws /usr/local/lib/ubuntu-luks-suspend/ubuntu-luks-suspend
