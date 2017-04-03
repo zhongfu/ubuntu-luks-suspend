@@ -47,6 +47,8 @@ if [ ! -e "${INITRAMFS_DIR}/suspend" ]; then
     [ -d "${INITRAMFS_DIR}" ] || mkdir "${INITRAMFS_DIR}"
     cd "${INITRAMFS_DIR}"
     (cpio --quiet -id; zcat | cpio --quiet -id) < "${INITRAMFS}"
+    chown -R root:root "${INITRAMFS_DIR}"
+    chmod -R go-w "${INITRAMFS_DIR}"
 fi
 
 # In case we're still missing the suspend script.
