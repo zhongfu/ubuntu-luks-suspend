@@ -21,19 +21,26 @@ perform the `luksSuspend`, actual suspend, and `luksResume` operations.
 Installation
 -------------
 
-1. Clone this repository:
+1. Clone this repository:  
    `git clone https://github.com/zhongfu/ubuntu-luks-suspend`
-2. Install the scripts:
+2. Install the scripts:  
    `sudo make install`
-3. Rebuild the initramfs:
+3. Rebuild the initramfs:  
    `sudo update-initramfs -u`
 4. Reboot.
 
+Uninstallation
+---------------
+1. Uninstall the scripts:  
+   `sudo make uninstall`
+2. Rebuild the initramfs:  
+   `sudo update-initramfs -u`
+3. Reboot.
 
 Author and license
 -------------------
 
-Copyright 2013 Vianney le Clément de Saint-Marcq <vleclement@gmail.com>
+Copyright 2013 Vianney le Clément de Saint-Marcq <vleclement@gmail.com>  
 Copyright 2017 Zhongfu Li <me@zhongfu.li>
 
 This program is free software: you can redistribute it and/or modify
