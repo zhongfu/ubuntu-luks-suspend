@@ -56,8 +56,11 @@ fi
 [ -e "${INITRAMFS_DIR}/suspend" ] || exec /lib/systemd/systemd-sleep suspend
 
 # Prepare chroot
+# For some reason, $BIND_PATHS aren't in ${INITRAMFS_DIR}
+# No worries, we'll just create them if they don't exist
 trap umount_initramfs EXIT
 for p in ${BIND_PATHS}; do
+    [ -d "${INITRAMFS_DIR}${p}" ] || mkdir -p "${INITRAMFS_DIR}${p}"
     mount -o bind ${p} "${INITRAMFS_DIR}${p}"
 done
 
