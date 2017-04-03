@@ -22,7 +22,7 @@ run_dir() {
     find "${dir}" -type f -executable -exec "{}" "$@" ";"
 }
 
-# Restore chroot
+# Unmount bind mounts
 umount_bind() {
     local p
     for p in ${BIND_PATHS}; do
@@ -30,8 +30,11 @@ umount_bind() {
     done
 }
 
+# Unmount (and remove) extracted initramfs
+# umount -l (lazy) because sometimes, it takes a while before everything stops
+# using the ramdisk.
 umount_initramfs() {
-    mountpoint -q "${INITRAMFS_DIR}" && umount "${INITRAMFS_DIR}"
+    mountpoint -q "${INITRAMFS_DIR}" && umount -l "${INITRAMFS_DIR}"
 }
 
 cleanup() {
