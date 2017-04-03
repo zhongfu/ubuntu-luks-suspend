@@ -75,7 +75,7 @@ fi
 # No worries, we'll just create them if they don't exist
 BIND_MOUNTED=1
 for p in ${BIND_PATHS}; do
-    [ -d "${INITRAMFS_DIR}${p}" ] || mkdir -p "${INITRAMFS_DIR}${p}"
+    [ -d "${INITRAMFS_DIR}${p}" ] || mkdir "${INITRAMFS_DIR}${p}"
     mount -o bind ${p} "${INITRAMFS_DIR}${p}"
 done
 
