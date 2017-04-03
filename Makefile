@@ -1,6 +1,6 @@
 .PHONY: all install
 
-INSTALL_DIR := /usr/lib/ubuntu-luks-suspend
+INSTALL_DIR := /usr/local/lib/ubuntu-luks-suspend
 
 all:
 

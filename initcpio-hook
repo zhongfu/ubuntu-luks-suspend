@@ -1,7 +1,7 @@
 #!/bin/bash
 
 build() {
-    add_file "/usr/lib/ubuntu-luks-suspend/initramfs-suspend" "/suspend" 755
+    add_file "/usr/local/lib/ubuntu-luks-suspend/initramfs-suspend" "/suspend" 755
 }
 
 help() {

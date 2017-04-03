@@ -7,7 +7,7 @@ trap 'echo "Press ENTER to continue."; read dummy' ERR
 ## Parameters and helper functions
 
 INITRAMFS_DIR=/run/initramfs
-SYSTEM_SLEEP_PATH=/usr/lib/systemd/system-sleep
+SYSTEM_SLEEP_PATH=/lib/systemd/system-sleep
 BIND_PATHS="/sys /proc /dev /run"
 REMOUNT=0
 # Retrieve cryptdevice name from boot cmdline
@@ -39,7 +39,7 @@ ext4_cryptdevice_mount_options() {
 ################################################################################
 ## Main script
 
-[ -e "${INITRAMFS_DIR}/suspend" ] || exec /usr/lib/systemd/systemd-sleep suspend
+[ -e "${INITRAMFS_DIR}/suspend" ] || exec /lib/systemd/systemd-sleep suspend
 
 # Prepare chroot
 trap umount_initramfs EXIT
