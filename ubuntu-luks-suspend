@@ -2,6 +2,7 @@
 
 set -e -u
 trap 'echo "Press ENTER to continue."; read dummy' ERR
+trap cleanup EXIT
 
 ################################################################################
 ## Parameters and helper functions
@@ -27,6 +28,20 @@ umount_initramfs() {
     for p in ${BIND_PATHS}; do
         ! mountpoint -q "${INITRAMFS_DIR}${p}" || umount "${INITRAMFS_DIR}${p}"
     done
+}
+
+remount_run() {
+    if ((REMOUNT_RUN_EXEC)); then
+        mount -o remount,noexec /run
+    fi
+}
+
+cleanup() {
+    if ((BIND_MOUNTED)); then
+	umount_initramfs
+    fi
+
+    remount_run
 }
 
 ext4_cryptdevice_mount_options() {
@@ -58,7 +73,7 @@ fi
 # Prepare chroot
 # For some reason, $BIND_PATHS aren't in ${INITRAMFS_DIR}
 # No worries, we'll just create them if they don't exist
-trap umount_initramfs EXIT
+BIND_MOUNTED=1
 for p in ${BIND_PATHS}; do
     [ -d "${INITRAMFS_DIR}${p}" ] || mkdir -p "${INITRAMFS_DIR}${p}"
     mount -o bind ${p} "${INITRAMFS_DIR}${p}"
@@ -95,11 +110,6 @@ sync
 # Hand over execution to script inside initramfs
 cd "${INITRAMFS_DIR}"
 chroot . /suspend "$CRYPTNAME"
-
-# remount /run as noexec
-if ((REMOUNT_RUN_EXEC)); then
-    mount -o remount,noexec /run
-fi
 
 # Restore original mount options if necessary
 if ((REMOUNT)); then
