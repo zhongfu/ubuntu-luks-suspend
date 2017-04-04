@@ -106,9 +106,6 @@ systemctl stop systemd-journald.socket
 systemctl stop systemd-journald-audit.socket
 systemctl stop systemd-journald.service
 
-# Synchronize filesystems before luksSuspend and remount with nobarrier
-sync
-
 # Journalled ext4 filesystems in kernel versions 3.11+ will block suspend
 # if mounted with `barrier=1`, which is the default. Temporarily remount with
 # `barrier=0` if this is true of the crypt fs.
@@ -117,6 +114,9 @@ if [[ "$MOUNT_OPTS" ]] && ! [[ "$MOUNT_OPTS" == *nobarrier* || "$MOUNT_OPTS" == 
     REMOUNT=1
     mount -o remount,nobarrier "/dev/mapper/$CRYPTNAME"
 fi
+
+# Synchronize filesystems before luksSuspend
+sync
 
 # Hand over execution to script inside initramfs
 cd "${INITRAMFS_DIR}"
