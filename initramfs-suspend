@@ -5,6 +5,9 @@ cryptname="${1}"
 # Start udev from initramfs
 /lib/systemd/systemd-udevd --daemon --resolve-names=never
 
+# One more sync, just in case
+sync
+
 # Suspend root device
 [ -z "${cryptname}" ] || cryptsetup luksSuspend "${cryptname}"
 
