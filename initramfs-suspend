@@ -18,8 +18,7 @@ echo mem > /sys/power/state
 [ -z "${cryptname}" ] ||
     while true; do
         cryptsetup luksResume "${cryptname}"
-        [[ $? == 0 ]] && break
-        [[ $? == 1 ]] && break
+        [[ $? -le 1 ]] && break
         sleep 2
     done
 
