@@ -52,9 +52,12 @@ cleanup() {
 }
 
 cryptdevice_mount_options() {
-    local mt="$(grep "^/dev/mapper/${1} " /proc/mounts | cut -d ' ' -f 3,4 | head -n 1)"
-    local fs="$(cut -d ' ' -f 1 <<< "${mt}")"
-    local opt="$(cut -d ' ' -f 2 <<< "${mt}")"
+    local mt
+    mt="$(grep "^/dev/mapper/${1} " /proc/mounts | cut -d ' ' -f 3,4 | head -n 1)"
+    local fs
+    fs="$(cut -d ' ' -f 1 <<< "${mt}")"
+    local opt
+    opt="$(cut -d ' ' -f 2 <<< "${mt}")"
     if [[ "${fs}" == "ext4" || "${fs}" == "btrfs" ]]; then
         echo "${opt}"
     fi
@@ -86,7 +89,7 @@ chmod -R go-w "${INITRAMFS_DIR}"
 BIND_MOUNTED=1
 for p in ${BIND_PATHS}; do
     [ -d "${INITRAMFS_DIR}${p}" ] || mkdir "${INITRAMFS_DIR}${p}"
-    mount -o bind ${p} "${INITRAMFS_DIR}${p}"
+    mount -o bind "${p}" "${INITRAMFS_DIR}${p}"
 done
 
 # Run pre-suspend scripts
