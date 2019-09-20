@@ -72,7 +72,8 @@ mount -t ramfs ramfs /run/initramfs
 INITRAMFS="/boot/initrd.img-$(uname -r)"
 [ -e "${INITRAMFS}" ] || exec /lib/systemd/systemd-sleep suspend
 cd "${INITRAMFS_DIR}"
-(cpio --quiet -id; zcat | cpio --quiet -id) < "${INITRAMFS}"
+unmkinitramfs "${INITRAMFS}" "${INITRAMFS_DIR}"
+mv "${INITRAMFS_DIR}"/main/* "${INITRAMFS_DIR}"
 chown -R root:root "${INITRAMFS_DIR}"
 chmod -R go-w "${INITRAMFS_DIR}"
 
