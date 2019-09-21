@@ -65,7 +65,7 @@ cryptdevice_mount_options() {
 
 # We'll mount ramfs on /run/initramfs, then extract initramfs there
 # Unmount /run/initramfs in case something failed previously
-mountpoint -q "${INITRAMFS_DIR}" && umount "${INITRAMFS_DIR}"
+mountpoint -q "${INITRAMFS_DIR}" && umount -R "${INITRAMFS_DIR}"
 [ -d "${INITRAMFS_DIR}" ] || mkdir "${INITRAMFS_DIR}"
 mount -t ramfs ramfs /run/initramfs
 
