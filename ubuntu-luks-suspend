@@ -11,6 +11,8 @@ INITRAMFS_DIR=/run/initramfs
 SYSTEM_SLEEP_PATH=/lib/systemd/system-sleep
 BIND_PATHS="/sys /proc /dev /run"
 REMOUNT=0
+NETWORKMANAGER=false
+
 # Retrieve cryptdevice name from /proc/mounts -- kinda hacky
 CRYPTNAME="$(grep -E "^/dev/mapper/[a-zA-Z0-9_\-]+ / " /proc/mounts | sed -r "s|^/dev/mapper/([a-zA-Z0-9_\-]+).*|\1|")"
 
@@ -93,6 +95,12 @@ done
 # Run pre-suspend scripts
 run_dir "${SYSTEM_SLEEP_PATH}" pre suspend
 
+# Stop network manager if available
+if systemctl is-active NetworkManager --quiet; then
+ 	NETWORKMANAGER=true
+	systemctl stop NetworkManager
+fi
+
 # Stop udev service and prevent it from being autostarted.
 # Otherwise, luksResume will hang waiting for udev, which is itself waiting
 # for I/O on the root device.
@@ -139,6 +147,12 @@ systemctl start systemd-udevd.service
 
 # Run post-suspend scripts
 run_dir "${SYSTEM_SLEEP_PATH}" post suspend
+
+# Restart networkmanager
+#!/bin/bash
+if [ "$NETWORKMANAGER" = true ]; then
+	systemctl start NetworkManager
+fi
 
 # Unlock user sessions
 loginctl unlock-sessions
