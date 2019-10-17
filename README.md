@@ -22,7 +22,7 @@ Installation
 -------------
 
 1. Clone this repository:  
-   `git clone https://github.com/samuel-w/ubuntu-luks-suspend`
+   `git clone https://github.com/zhongfu/ubuntu-luks-suspend`
 2. Install the scripts:  
    `sudo make install`
 3. Rebuild the initramfs:  
