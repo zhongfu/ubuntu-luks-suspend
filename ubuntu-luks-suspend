@@ -102,9 +102,6 @@ if systemctl is-active $NETWORK_SERVICE_NAME --quiet; then
 	systemctl stop $NETWORK_SERVICE_NAME
 fi
 
-# Stop timesync, prevents hang
-systemctl stop systemd-timesyncd
-
 # Stop udev service and prevent it from being autostarted.
 # Otherwise, luksResume will hang waiting for udev, which is itself waiting
 # for I/O on the root device.
@@ -148,9 +145,6 @@ systemctl start systemd-journald.service
 systemctl start systemd-udevd-control.socket
 systemctl start systemd-udevd-kernel.socket
 systemctl start systemd-udevd.service
-
-# Restart timesyncd
-systemctl start systemd-timesyncd
 
 # Run post-suspend scripts
 run_dir "${SYSTEM_SLEEP_PATH}" post suspend
